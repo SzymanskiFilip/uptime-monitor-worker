@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/SzymanskiFilip/uptime-monitoring-go/types"
 )
 
-func PersistRequest(r *http.Response){
+func PersistRequest(r *http.Response, t time.Duration){
 	stat := types.Statistic {
 		URL: `http://localhost:3000`,
 		Headers: "any",
 		Status: int16(r.StatusCode),
 		Success: true,
-		ResponseTime: 200,
+		ResponseTime: t.Milliseconds(),
 	}
 
 	sqlStatement := `INSERT INTO statistics (url, headers, status, success, response_time) 
@@ -26,6 +27,7 @@ func PersistRequest(r *http.Response){
 	}
 
 	fmt.Println("persisted")
-
 }
+
+
 
