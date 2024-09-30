@@ -6,9 +6,6 @@ import (
 	"time"
 )
 
-//pobrać adresy do pingowania
-//zacząć goroutine który pinguje każdy url co 2min i zapisuje staty
-
 var client = &http.Client{
 	Timeout: 15 * time.Second,
 }
@@ -32,8 +29,10 @@ func performRequest(ad string) {
 	fmt.Println("SENDING REQUEST " + time.Now().Format("15:04:05"))
 	resp, err := client.Get(ad)
 	if err != nil {
+		//persistence
 		fmt.Println("error")
 	} else {
+		//persistence
 		fmt.Println("good " + resp.Status)
 	}
 }

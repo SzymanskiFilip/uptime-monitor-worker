@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/SzymanskiFilip/uptime-monitoring-go/storage"
 	"github.com/SzymanskiFilip/uptime-monitoring-go/worker"
 	"github.com/labstack/echo/v4"
 )
@@ -14,8 +15,9 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
-	fmt.Println("Program started")
-
+	fmt.Println("Program started...")
+	
+	storage.InitializeDatabase()
 
 	worker.StartPinging()
 

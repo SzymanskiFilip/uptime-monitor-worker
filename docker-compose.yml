@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  database:
+    image: postgres:15
+    ports:
+      - "5430:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
+      - POSTGRES_DB=pinger_database
