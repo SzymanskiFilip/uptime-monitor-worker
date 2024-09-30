@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/SzymanskiFilip/uptime-monitoring-go/storage"
+	"github.com/google/uuid"
 )
 
 var client = &http.Client{
@@ -23,12 +24,13 @@ func StartPinging(){
 func ping(ad string){
 	for {
 		time.Sleep(1 * time.Second)
-		go performRequest(ad)
+		go performRequest(ad, uuid.New())
 	}
 }
 
-func performRequest(ad string) {
-	fmt.Println("SENDING REQUEST " + time.Now().Format("15:04:05"))
+func performRequest(ad string, id uuid.UUID) {
+	fmt.Println("SENDING REQUEST " + id.String() + time.Now().Format("15:04:05"))
+	now := time.Now()
 	resp, err := client.Get(ad)
 	if err != nil {
 		//persistence
@@ -36,7 +38,9 @@ func performRequest(ad string) {
 	} else {
 		//persistence
 		fmt.Println("good " + resp.Status)
-		storage.PersistRequest(resp)
+
+		elapsed := time.Since(now)
+		storage.PersistRequest(resp, elapsed)
 	}
 }
 
