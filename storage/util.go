@@ -28,9 +28,13 @@ func InitializeDatabase(){
 	//STATISTICS TABLE
 	_, err = db.Exec(`
 	CREATE TABLE IF NOT EXISTS statistics (
-		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-		url TEXT NOT NULL	
-	)
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    url TEXT NOT NULL,
+    headers TEXT NOT NULL,
+    status INT NOT NULL CHECK (status >= 100 AND status < 600),
+    success BOOLEAN NOT NULL,
+    response_time INT NOT NULL CHECK (response_time >= 0)
+	);
 	`)
 	if err != nil{
 		log.Fatal("error")
