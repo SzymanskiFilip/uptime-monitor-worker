@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/SzymanskiFilip/uptime-monitoring-go/storage"
 )
 
 var client = &http.Client{
@@ -34,6 +36,7 @@ func performRequest(ad string) {
 	} else {
 		//persistence
 		fmt.Println("good " + resp.Status)
+		storage.PersistRequest(resp)
 	}
 }
 
