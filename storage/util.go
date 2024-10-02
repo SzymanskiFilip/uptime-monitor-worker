@@ -44,6 +44,7 @@ func InitializeDatabase(){
     headers TEXT NOT NULL,
     success BOOLEAN NOT NULL,
     response_time INT NOT NULL CHECK (response_time >= 0),
+	saved_at timestamp NOT NULL,
 	FOREIGN KEY (url_id) REFERENCES urls (id)
 	);
 	`)
