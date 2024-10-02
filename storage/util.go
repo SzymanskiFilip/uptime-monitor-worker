@@ -42,7 +42,6 @@ func InitializeDatabase(){
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     url_id UUID NOT NULL,
     headers TEXT NOT NULL,
-    status INT NOT NULL CHECK (status >= 100 AND status < 600),
     success BOOLEAN NOT NULL,
     response_time INT NOT NULL CHECK (response_time >= 0),
 	FOREIGN KEY (url_id) REFERENCES urls (id)
