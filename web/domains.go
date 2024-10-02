@@ -1,6 +1,8 @@
 package web
 
 import (
+	"fmt"
+
 	"github.com/SzymanskiFilip/uptime-monitoring-go/storage"
 	"github.com/labstack/echo/v4"
 )
@@ -19,6 +21,7 @@ func RegisterDomain(c echo.Context) error {
 	newDomain := DomainPost{}
 
 	err := c.Bind(&newDomain); if err != nil {
+		fmt.Println(err)
 		return c.JSON(400, nil)
 	}
 
