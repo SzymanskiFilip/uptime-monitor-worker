@@ -10,3 +10,9 @@ type Statistic struct {
 	Success bool `json:"success"`
 	ResponseTime int64 `json:"response_time"`
 }
+
+
+type URLStored struct {
+	Id string `json:"id"`
+	Domain string `json:"url"`
+}
