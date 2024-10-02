@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/SzymanskiFilip/uptime-monitoring-go/types"
@@ -26,7 +27,7 @@ func PersistRequest(r *http.Response, t time.Duration){
 		log.Fatal(err)
 	}
 
-	fmt.Println("persisted")
+	fmt.Println("stat persisted")
 }
 
 
@@ -57,4 +58,22 @@ func GetDomains() []types.URLStored{
 	defer rows.Close()
 
 	return data
+}
+
+//1 = success, 2 = already exists
+func SaveDomain(domain string) int {
+	_, err := db.Exec(`
+	INSERT INTO urls (url) VALUES ($1)
+	`, domain)
+
+	if err != nil {
+		if strings.Contains(err.Error(), `pq: duplicate key value violates unique constraint "urls_url_key"`) {
+			fmt.Println("domain not persisted, already exists")
+			return 2
+		} else {
+			log.Fatal(err)
+		}
+	}
+	fmt.Println("domain persisted")
+	return 1
 }

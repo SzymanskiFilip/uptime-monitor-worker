@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/SzymanskiFilip/uptime-monitoring-go/storage"
 	"github.com/SzymanskiFilip/uptime-monitoring-go/web"
 	"github.com/labstack/echo/v4"
 )
@@ -13,7 +14,7 @@ func main() {
 
 	fmt.Println("Program started...")
 	
-	//storage.InitializeDatabase()
+	storage.InitializeDatabase()
 
 	//go worker.StartPinging()
 
