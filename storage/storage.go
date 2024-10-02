@@ -4,28 +4,49 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/SzymanskiFilip/uptime-monitoring-go/types"
+	"github.com/google/uuid"
 )
 
-func PersistRequest(r *http.Response, t time.Duration){
-	stat := types.Statistic {
-		URL: `http://localhost:3000`,
-		Headers: "any",
-		Status: int16(r.StatusCode),
-		Success: true,
-		ResponseTime: t.Milliseconds(),
+func PersistRequest(r *http.Response, t time.Duration, address string, id string){
+
+	var headers[] string
+
+	for key, values := range r.Header {
+		header := fmt.Sprintf("%s: %s", key, strings.Join(values, ", "))
+		headers = append(headers, header)
 	}
 
-	sqlStatement := `INSERT INTO statistics (url, headers, status, success, response_time) 
-	values ($1, $2, $3, $4, $5)`
-
-	_, err := db.Exec(sqlStatement, stat.URL, stat.Headers, stat.Status, stat.Success, stat.ResponseTime)
+	
+	status, err := strconv.Atoi(r.Status[:3])
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	uuid, err := uuid.Parse(id); if err != nil {
+		log.Fatal(err)
+	}
+
+	stat := types.Statistic {
+		Id: uuid,
+		Headers: strings.Join(headers, "\n"),
+		Success: status >= 200,
+		ResponseTime: t.Milliseconds(),
+	}
+
+	sqlStatement := `INSERT INTO statistics (url_id, headers, success, response_time) 
+	values ($1, $2, $3, $4)`
+
+	_, error := db.Exec(sqlStatement, stat.Id, stat.Headers, stat.Success, stat.ResponseTime)
+	if error != nil {
+		log.Fatal(error)
+	}
+
+	defer r.Body.Close()
 
 	fmt.Println("stat persisted")
 }
