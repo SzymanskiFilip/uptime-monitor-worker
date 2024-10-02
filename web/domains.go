@@ -36,7 +36,7 @@ func RegisterDomain(c echo.Context) error {
 
 
 type DomainDelete struct {
-	Id string `query:"id"`
+	ID string `query:"id"`
 }
 func DeleteDomain(c echo.Context) error{
 
@@ -47,8 +47,7 @@ func DeleteDomain(c echo.Context) error{
 		return c.JSON(400, nil)
 	}
 
-
-	status := storage.DeleteDomain(d.Id)
+	status := storage.DeleteDomain(d.ID)
 	if status {
 		return c.JSON(200, nil)
 	}

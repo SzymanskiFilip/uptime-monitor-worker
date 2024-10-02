@@ -68,13 +68,11 @@ func SaveDomain(domain string) int {
 
 	if err != nil {
 		if strings.Contains(err.Error(), `pq: duplicate key value violates unique constraint "urls_url_key"`) {
-			fmt.Println("domain not persisted, already exists")
 			return 2
 		} else {
 			log.Fatal(err)
 		}
 	}
-	fmt.Println("domain persisted")
 	return 1
 }
 
@@ -82,6 +80,5 @@ func DeleteDomain(id string) bool {
 	_, err := db.Exec(`
 		DELETE FROM urls WHERE urls.id = $1
 	`, id)
-	fmt.Println(err)
 	return err == nil
 }
