@@ -36,12 +36,13 @@ func PersistRequest(r *http.Response, t time.Duration, address string, id string
 		Headers: strings.Join(headers, "\n"),
 		Success: status >= 200,
 		ResponseTime: t.Milliseconds(),
+		SavedAt: time.Now(),
 	}
 
-	sqlStatement := `INSERT INTO statistics (url_id, headers, success, response_time) 
-	values ($1, $2, $3, $4)`
+	sqlStatement := `INSERT INTO statistics (url_id, headers, success, response_time, saved_at) 
+	values ($1, $2, $3, $4, $5)`
 
-	_, error := db.Exec(sqlStatement, stat.Id, stat.Headers, stat.Success, stat.ResponseTime)
+	_, error := db.Exec(sqlStatement, stat.Id, stat.Headers, stat.Success, stat.ResponseTime, stat.SavedAt)
 	if error != nil {
 		log.Fatal(error)
 	}
