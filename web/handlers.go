@@ -7,4 +7,7 @@ func RegisterEndpoints(e *echo.Echo){
 	e.GET("/domains", GetRegisteredDomains)
 	e.POST("/domains", RegisterDomain)
 	e.DELETE("/domains", DeleteDomain)
+
+
+	//e.GET("/statistics")
 }
