@@ -33,3 +33,24 @@ func RegisterDomain(c echo.Context) error {
 		return c.JSON(409, nil)
 	}
 }
+
+
+type DomainDelete struct {
+	Id string `query:"id"`
+}
+func DeleteDomain(c echo.Context) error{
+
+	d := DomainDelete{}
+
+	err := c.Bind(&d); if err != nil {
+		fmt.Println(err)
+		return c.JSON(400, nil)
+	}
+
+
+	status := storage.DeleteDomain(d.Id)
+	if status {
+		return c.JSON(200, nil)
+	}
+	return c.JSON(400, nil)
+}

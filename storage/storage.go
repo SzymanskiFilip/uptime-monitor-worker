@@ -77,3 +77,11 @@ func SaveDomain(domain string) int {
 	fmt.Println("domain persisted")
 	return 1
 }
+
+func DeleteDomain(id string) bool {
+	_, err := db.Exec(`
+		DELETE FROM urls WHERE urls.id = $1
+	`, id)
+	fmt.Println(err)
+	return err == nil
+}
