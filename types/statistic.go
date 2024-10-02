@@ -1,6 +1,10 @@
 package types
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Statistic struct {
 	Id uuid.UUID `json:"id"`
@@ -8,6 +12,7 @@ type Statistic struct {
 	Headers string `json:"headers"`
 	Success bool `json:"success"`
 	ResponseTime int64 `json:"response_time"`
+	SavedAt time.Time `json:"saved_at"`
 }
 
 
