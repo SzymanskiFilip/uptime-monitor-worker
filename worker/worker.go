@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/SzymanskiFilip/uptime-monitoring-go/storage"
-	"github.com/google/uuid"
+	"github.com/SzymanskiFilip/uptime-monitoring-go/types"
 )
 
 var client = &http.Client{
@@ -17,19 +17,19 @@ func StartPinging(){
 	var adresses = getPingingAdresses()
 
 	for _, item := range adresses {
-		ping(item)
+		ping(item.Domain, item.Id)
 	}
 }
 
-func ping(ad string){
+func ping(ad string, id string){
 	for {
 		time.Sleep(1 * time.Second)
-		go performRequest(ad, uuid.New())
+		go performRequest(ad, id)
 	}
 }
 
-func performRequest(ad string, id uuid.UUID) {
-	fmt.Println("SENDING REQUEST " + id.String() + time.Now().Format("15:04:05"))
+func performRequest(ad string, id string) {
+	fmt.Println("SENDING REQUEST " + id + time.Now().Format("15:04:05"))
 	now := time.Now()
 	resp, err := client.Get(ad)
 	if err != nil {
@@ -40,12 +40,13 @@ func performRequest(ad string, id uuid.UUID) {
 		fmt.Println("good " + resp.Status)
 
 		elapsed := time.Since(now)
-		storage.PersistRequest(resp, elapsed)
+		storage.PersistRequest(resp, elapsed, ad, id)
 	}
 }
 
-func getPingingAdresses() []string{
-	adresses := []string{"http://localhost:3000/api/service/status"}
+func getPingingAdresses() []types.URLStored{
+	adresses := storage.GetDomains()
 	return adresses
 }
 
+//http://localhost:3000/api/service/status
