@@ -30,4 +30,31 @@ func PersistRequest(r *http.Response, t time.Duration){
 }
 
 
+func GetDomains() []types.URLStored{
+	db := GetDB();
 
+	data := []types.URLStored{}
+
+	rows, err := db.Query(`
+		SELECT * FROM urls
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var id string
+	var domain string
+
+	for rows.Next() {
+		err := rows.Scan(&id, &domain)
+		if err != nil {
+			log.Fatal()
+		}
+
+		data = append(data, types.URLStored{Id: id, Domain: domain})
+	}
+
+	defer rows.Close()
+
+	return data
+}
