@@ -104,3 +104,41 @@ func DeleteDomain(id string) bool {
 	`, id)
 	return err == nil
 }
+
+
+type ResponseTimeRow struct {
+	Date time.Time `json:"date"`
+	Avg float64 `json:"avg"`
+}
+
+func GetDailyResponseTimeAverage(id string) ([]ResponseTimeRow, error) {
+	rows, err := db.Query(`
+	SELECT DATE(saved_at), AVG(response_time) FROM statistics
+	where url_id = $1
+	group by DATE(saved_at)
+	order by date
+	`, id)
+
+	if err != nil {
+		fmt.Print(err)
+	}
+
+
+	defer rows.Close()
+
+	data := []ResponseTimeRow{}
+
+	var date time.Time
+	var avg float64
+
+	for rows.Next() {
+		err := rows.Scan(&date, &avg)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data = append(data, ResponseTimeRow{Date: date, Avg: avg})
+	}
+
+	return data, nil
+}

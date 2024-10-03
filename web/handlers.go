@@ -9,5 +9,5 @@ func RegisterEndpoints(e *echo.Echo){
 	e.DELETE("/domains", DeleteDomain)
 
 
-	//e.GET("/statistics")
+	e.GET("/statistics", GetDailyResponseTimeAverage)
 }
