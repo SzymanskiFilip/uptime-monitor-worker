@@ -114,7 +114,7 @@ type ResponseTimeRow struct {
 func GetDailyResponseTimeAverage(id string) ([]ResponseTimeRow, error) {
 	rows, err := db.Query(`
 	SELECT DATE(saved_at), AVG(response_time) FROM statistics
-	where url_id = $1
+	where url_id = $1 and saved_at >= NOW() - INTERVAL '1 month'
 	group by DATE(saved_at)
 	order by date
 	`, id)
@@ -141,4 +141,128 @@ func GetDailyResponseTimeAverage(id string) ([]ResponseTimeRow, error) {
 	}
 
 	return data, nil
+}
+
+func GetDomainById(i string) (idReturn string, urlReturn string){
+
+	var url string
+	var id string
+
+	err := db.QueryRow(`
+	SELECT * FROM urls where urls.id = $1
+	`, i).Scan(&id, &url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return id, url
+}
+
+func GetMaxAndMinRespTime(id string) (min types.StatisticStored, max types.StatisticStored) {
+
+	minStat := types.StatisticStored{}
+	maxStat := types.StatisticStored{}
+
+	err := db.QueryRow(`
+	SELECT *
+		FROM statistics
+		where success = true and url_id = $1
+		ORDER BY response_time asc
+	`, id).Scan(&minStat.Id, &minStat.URL_ID, &minStat.Headers, &minStat.Success, &minStat.ResponseTime, &minStat.SavedAt); if err != nil {
+		log.Fatal(err)
+	}
+
+	er := db.QueryRow(`
+		SELECT *
+		FROM statistics
+		where success = true and url_id = $1
+		ORDER BY response_time desc
+	`, id).Scan(&maxStat.Id, &maxStat.URL_ID, &maxStat.Headers, &maxStat.Success, &maxStat.ResponseTime, &maxStat.SavedAt); if er != nil {
+		log.Fatal(err)
+	}
+
+	return minStat, maxStat
+}
+
+type ResponseTimeUnionRow struct {
+	Date time.Time `json:"date"`
+	Avg float64 `json:"avg"`
+	Period string `json:"period"`
+}
+
+func GetPrevWeeks(id string) (first []ResponseTimeRow, second []ResponseTimeRow) {
+	rows, err := db.Query(`
+	SELECT DATE(saved_at) AS date, AVG(response_time) AS avg_response_time, 'last7' AS period
+		FROM statistics
+		WHERE url_id = $1
+		  AND saved_at >= NOW() - INTERVAL '7 days'
+		GROUP BY DATE(saved_at)
+		UNION ALL
+		SELECT DATE(saved_at) AS date, AVG(response_time) AS avg_response_time, 'last14to7' AS period
+		FROM statistics
+		WHERE url_id = $1
+		  AND saved_at < NOW() - INTERVAL '7 days'
+		  AND saved_at >= NOW() - INTERVAL '14 days'
+		GROUP BY DATE(saved_at)
+		ORDER BY date, period;
+	`, id)
+
+	if err != nil {
+		fmt.Print(err)
+	}
+
+
+	data := []ResponseTimeUnionRow{}
+
+
+	var date time.Time
+	var avg float64
+	var period string
+
+	for rows.Next() {
+		err := rows.Scan(&date, &avg, &period)
+		if err != nil {
+			log.Fatal(err)
+		}
+		data = append(data, ResponseTimeUnionRow{Date: date, Avg: avg, Period: period})
+	}
+
+	firstList := []ResponseTimeRow{}
+	secondList := []ResponseTimeRow{}
+
+
+	for _, value := range data {
+		if value.Period == "last7" {
+			firstList = append(firstList, ResponseTimeRow{Avg: value.Avg, Date: value.Date})
+		} else {
+			secondList = append(secondList, ResponseTimeRow{Avg: value.Avg, Date: value.Date})
+		}
+	}
+
+	return firstList, secondList
+}
+
+func GetOutages(id string) []types.StatisticStored {
+	rows, err := db.Query(`
+	SELECT * FROM statistics
+	WHERE success = false and url_id = $1
+	`, id); if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	data := []types.StatisticStored{}
+
+	stat := types.StatisticStored{}
+	for rows.Next() {
+		err := rows.Scan(&stat.Id, &stat.URL_ID, &stat.Headers, &stat.Success, &stat.ResponseTime, &stat.SavedAt)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data = append(data, stat)
+	}
+
+	return data
 }
