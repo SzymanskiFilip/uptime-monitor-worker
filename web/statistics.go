@@ -62,12 +62,15 @@ func GetDetailedStatistics(c echo.Context) error{
 
 	outages := storage.GetOutages(id.ID)
 
+	allStats := storage.GetStatistics(id.ID)
+
 	response := DetailedStatistics{
 		ID: urlId,
 		URL: urlValue,
 		ResponseTimeRowMonth: row,
 		MinimumStat: min,
 		MaximumStat: max,
+		AllStats: allStats,
 		ResponseTimePrev7: prev,
 		ResponseTimePrev14: prev2,
 		Outages: outages,
@@ -82,6 +85,7 @@ type DetailedStatistics struct {
 	ResponseTimeRowMonth []storage.ResponseTimeRow `json:"response_times"`
 	MinimumStat types.StatisticStored `json:"minimum"`
 	MaximumStat types.StatisticStored `json:"maximum"`
+	AllStats []types.StatisticStored `json:"all"`
 	ResponseTimePrev7 []storage.ResponseTimeRow `json:"response_times_7"`
 	ResponseTimePrev14 []storage.ResponseTimeRow `json:"response_times_14"`
 	Outages []types.StatisticStored `json:"outages"`
