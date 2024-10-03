@@ -266,3 +266,28 @@ func GetOutages(id string) []types.StatisticStored {
 
 	return data
 }
+
+func GetStatistics(id string) []types.StatisticStored {
+rows, err := db.Query(`
+	SELECT * FROM statistics
+	WHERE url_id = $1
+	`, id); if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	data := []types.StatisticStored{}
+
+	stat := types.StatisticStored{}
+	for rows.Next() {
+		err := rows.Scan(&stat.Id, &stat.URL_ID, &stat.Headers, &stat.Success, &stat.ResponseTime, &stat.SavedAt)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data = append(data, stat)
+	}
+
+	return data
+}
