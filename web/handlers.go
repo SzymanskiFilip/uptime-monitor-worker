@@ -11,4 +11,6 @@ func RegisterEndpoints(e *echo.Echo){
 
 	e.GET("/statistics", GetDailyResponseTimeAverage)
 	e.GET("/statistics/details", GetDetailedStatistics)
+
+	e.GET("/ws", DomainSocketHandler)
 }
