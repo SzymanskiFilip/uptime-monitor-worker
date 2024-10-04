@@ -16,9 +16,10 @@ var client = &http.Client{
 var addresses = []types.URLStored{}
 
 func StartPinging(){
+	addresses = getPingingAdresses()
 	for {
 		loopOverAdresses()
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
 
