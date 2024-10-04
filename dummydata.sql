@@ -11,7 +11,7 @@ BEGIN
             is_success := (RANDOM() > 0.5)::BOOLEAN;
             INSERT INTO statistics (url_id, headers, success, response_time, saved_at)
             VALUES (
-                '8b91d2b2-daef-4e75-94ef-413e7111562e',
+                '9f814514-0ada-40e1-b7d8-cf0ff7f94467',
                 'Header ' || (RANDOM() * 1000)::INT,
                 is_success,
                 CASE 
