@@ -52,5 +52,4 @@ func getPingingAdresses() []types.URLStored{
 	adresses := storage.GetDomains()
 	return adresses
 }
-
 //http://localhost:3000/api/service/status
