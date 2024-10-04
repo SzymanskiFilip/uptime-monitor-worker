@@ -1,6 +1,8 @@
 package web
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+)
 
 
 func RegisterEndpoints(e *echo.Echo){
@@ -11,6 +13,4 @@ func RegisterEndpoints(e *echo.Echo){
 
 	e.GET("/statistics", GetDailyResponseTimeAverage)
 	e.GET("/statistics/details", GetDetailedStatistics)
-
-	e.GET("/ws", DomainSocketHandler)
 }
