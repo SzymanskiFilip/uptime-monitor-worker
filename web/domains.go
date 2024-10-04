@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/SzymanskiFilip/uptime-monitoring-go/storage"
+	"github.com/SzymanskiFilip/uptime-monitoring-go/worker"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,6 +27,7 @@ func RegisterDomain(c echo.Context) error {
 	}
 
 	status := storage.SaveDomain(newDomain.Url)
+	worker.UpdateAddresses()
 
 	if status == 1 {
 		return c.JSON(200, nil)
@@ -48,6 +50,8 @@ func DeleteDomain(c echo.Context) error{
 	}
 
 	status := storage.DeleteDomain(d.ID)
+	worker.UpdateAddresses()
+
 	if status {
 		return c.JSON(200, nil)
 	}
