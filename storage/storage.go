@@ -44,7 +44,7 @@ func PersistRequest(r *http.Response, t time.Duration, address string, id string
 
 	_, error := db.Exec(sqlStatement, stat.Id, stat.Headers, stat.Success, stat.ResponseTime, stat.SavedAt)
 	if error != nil {
-		log.Fatal(error)
+		fmt.Println("Storing request failed, maybe url got deleted")
 	}
 
 	defer r.Body.Close()
@@ -99,6 +99,11 @@ func SaveDomain(domain string) int {
 }
 
 func DeleteDomain(id string) bool {
+
+	db.Exec(`
+		DELETE FROM statistics WHERE url_id = $1
+	`, id)
+
 	_, err := db.Exec(`
 		DELETE FROM urls WHERE urls.id = $1
 	`, id)
