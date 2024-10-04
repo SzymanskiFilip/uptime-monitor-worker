@@ -13,19 +13,23 @@ var client = &http.Client{
 	Timeout: 15 * time.Second,
 }
 
-func StartPinging(){
-	var adresses = getPingingAdresses()
+var addresses = []types.URLStored{}
 
-	for _, item := range adresses {
-		ping(item.Domain, item.Id)
+func StartPinging(){
+	for {
+		loopOverAdresses()
+		time.Sleep(1 * time.Second)
 	}
 }
 
-func ping(ad string, id string){
-	for {
-		time.Sleep(1 * time.Second)
-		go performRequest(ad, id)
+func loopOverAdresses(){
+	for _, value := range addresses {
+		go performRequest(value.Domain, value.Id)
 	}
+}
+
+func UpdateAddresses(){
+	addresses = getPingingAdresses()
 }
 
 func performRequest(ad string, id string) {
